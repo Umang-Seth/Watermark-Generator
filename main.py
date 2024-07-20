@@ -5,16 +5,11 @@ from tkinter import filedialog
 
 def select_file():
     root = tk.Tk()
-    root.withdraw()  # Hide the root window
+    root.withdraw()
     file_path = filedialog.askopenfilename(title="Select an Image",
         filetypes=[("PNG","*.png"),("JPG","*.jpg")]
-    )  # Open the file dialog
-
-
-# Call the function and print the selected file path
+    )
     print(f"Selected file: {file_path}")
-
-    # You can now use this path to open and read the file
     if file_path:
         try:
             img = cv2.imread(f'{file_path}', cv2.IMREAD_UNCHANGED)
@@ -40,14 +35,31 @@ if proceed_2 == "y":
 else:
     exit()
 
-#TO BE MADE USER CONTROLLED TO ADJUST SIZE OF IMAGE
-logo = cv2.resize(logo, None, fx=0.1, fy=0.1, interpolation=cv2.INTER_LINEAR)
+
+#ADD PROVISION TO CONVERT JPG LOGO TO PNG
+img_h, img_w, _ = img.shape
+logo_h, logo_w, a = logo.shape
+
+if img_h < logo_h or img_w < logo_w:
+    print("Logo is greater than image")
+    img_h_w = img.shape[:2]
+    lower = min(img_h_w)
+    value = img.shape[img_h_w.index(lower)]/logo.shape[img_h_w.index(lower)]
+    rounded_down = round(value - 0.05, 1)
+
+
+if a != 4:
+    print("The Selected Logo in not png format")
+    exit()
+
+print(f"Scale Down the Watermark Logo. 1 to 0 1 begin original size. Recommendated Value < {rounded_down}")
+scale = float(input().lower())
+logo = cv2.resize(logo, None, fx=scale, fy=scale, interpolation=cv2.INTER_LINEAR)
 
 logo_bgr = logo[:, :, 0:3]
 logo_alpha = logo[:, :, 3]
 
-img_h, img_w, _ = img.shape
-logo_h, logo_w, _ = logo.shape
+logo_h, logo_w, a = logo.shape
 
 """
 To Added Logo in Center of Image with 100% Transparency
