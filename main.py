@@ -21,6 +21,16 @@ def select_file():
         print("No file selected.")
     return img
 
+def convert_to_png(img):
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    ret, thresh = cv2.threshold(gray, 230,255, cv2.THRESH_BINARY)
+    inv_mask = cv2.bitwise_not(thresh)
+    bk, gk, rk = cv2.split(img)
+    mat = [bk, gk, rk, inv_mask]
+    trans_img = cv2.merge(mat)
+    return trans_img
+
+
 print("Select the Image on which you want to add Watermark. Supported File Formats .jpg,.png. Do you want to continue? [Y/n]")
 proceed_1 = input().lower()
 if proceed_1 == "y":
@@ -28,7 +38,7 @@ if proceed_1 == "y":
 else:
     exit()
 
-print("Select the logo which be Watermark. Supported File Formats .png. Do you want to continue? [Y/n]")
+print("Select the logo which be Watermark. Supported File Formats .jpg,.png. Do you want to continue? [Y/n]")
 proceed_2 = input().lower()
 if proceed_2 == "y":
     logo = select_file()
@@ -36,7 +46,6 @@ else:
     exit()
 
 
-#ADD PROVISION TO CONVERT JPG LOGO TO PNG
 img_h, img_w, _ = img.shape
 logo_h, logo_w, a = logo.shape
 
@@ -46,11 +55,12 @@ if img_h < logo_h or img_w < logo_w:
     lower = min(img_h_w)
     value = img.shape[img_h_w.index(lower)]/logo.shape[img_h_w.index(lower)]
     rounded_down = round(value - 0.05, 1)
+else:
+    rounded_down = 1
 
 
 if a != 4:
-    print("The Selected Logo in not png format")
-    exit()
+    logo = convert_to_png(logo)
 
 print(f"Scale Down the Watermark Logo. 1 to 0 1 begin original size. Recommendated Value < {rounded_down}")
 scale = float(input().lower())
