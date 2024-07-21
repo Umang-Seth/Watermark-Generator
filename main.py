@@ -95,7 +95,12 @@ roi_final = cv2.bitwise_or(masked_roi, masked_logo)
 roi_1 = roi.copy()
 img_1 = img.copy()
 
-img_1[tlc_y:brc_y, tlc_x:brc_x] = roi_final
+print("Enter Transparency of Logo. Values from 0 to 1")
+trans = float(input())
+
+watermark = cv2.addWeighted(roi_1, 1, logo_bgr, trans, 0)
+
+img_1[tlc_y:brc_y, tlc_x:brc_x] = watermark
 
 cv2.imwrite('Output.jpg', img_1)
 """
